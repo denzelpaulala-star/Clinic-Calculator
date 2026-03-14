@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optometry Clinic Calculator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+/* Pastel Yellow Theme */
+body { font-family: Arial, sans-serif; background: #fff9e6; margin: 0; padding: 20px; }
+.container { max-width: 500px; margin: auto; position: relative; }
+.card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+h1 { text-align: center; color: #333; margin-top: 10px; border-bottom: 2px solid #2c7be5; padding-bottom: 5px; }
+h2 { text-align: center; margin-top: 0; font-size: 1.1rem; color: #555; text-transform: uppercase; }
+label { font-weight: bold; display: block; margin-top: 10px; }
+input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
+button { width: 100%; padding: 12px; margin-top: 10px; font-size: 16px; background: #2c7be5; color: white; border: none; border-radius: 8px; cursor: pointer; }
+button:active { background: #1a5ab5; }
+.answers { font-size: 16px; font-weight: bold; margin-top: 12px; padding: 10px; background: #fdfdfd; border-radius: 5px; border-left: 4px solid #2c7be5; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
+
+/* Layout for NPA Tries */
+.npa-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.npa-row input { flex: 2; }
+.npa-row select { flex: 1; }
+.try-res { flex: 1.5; font-size: 14px; color: #2c7be5; font-weight: bold; text-align: right; min-width: 70px; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; background: white; }
+th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+th { background-color: #2c7be5; color: white; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+
+.pdf-btn { background: #28a745; margin-top: 20px; margin-bottom: 50px; font-weight: bold; }
+
+/* Circular Logo Styling */
+.logo-container { position: absolute; top: 10px; right: 0; }
+.logo-circle { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #2c7be5; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+h1 { margin-top: 30px; }
+</style>
+</head>
+
+<body>
+
+<div id="report-content">
+<div class="container">
+
+    <div class="logo-container">
+        <div class="logo-circle">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQun2fcehMU4woJgv5Ufn7kjND2kSYyPV2f9A&s" alt="Logo">
+        </div>
+    </div>
+
+    <h1>CLINIC CALCULATOR</h1>
+    
+    <div class="card">
+        <label>Patient Name</label>
+        <input type="text" id="patient_name" placeholder="Full Name">
+        <label>Date</label>
+        <input type="date" id="report_date">
+    </div>
+
+    <h2>Donder's Reference</h2>
+    <div class="card">
+        <table>
+            <tr><th>Age</th><th>Amp (D)</th><th>Age</th><th>Amp (D)</th></tr>
+            <tr><td>10</td><td>14.00</td><td>45</td><td>3.50</td></tr>
+            <tr><td>15</td><td>12.00</td><td>50</td><td>2.50</td></tr>
+            <tr><td>20</td><td>10.00</td><td>55</td><td>1.75</td></tr>
+            <tr><td>25</td><td>8.50</td><td>60</td><td>1.00</td></tr>
+            <tr><td>30</td><td>7.00</td><td>65</td><td>0.50</td></tr>
+            <tr><td>35</td><td>5.50</td><td>70</td><td>0.25</td></tr>
+            <tr><td>40</td><td>5.00</td><td>75</td><td>0.00</td></tr>
+        </table>
+    </div>
+
+    <h2>NPA Measurement</h2>
+    <div class="card">
+        <label>OD (Right Eye)</label>
+        <div class="npa-row">
+            <input id="npa_od_1" type="number" placeholder="Try 1" oninput="updateSingleNPA('od', 1)">
+            <select id="unit_od_1" onchange="updateSingleNPA('od', 1)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_od_1" class="try-res">-- D</div>
+        </div>
+        <div class="npa-row">
+            <input id="npa_od_2" type="number" placeholder="Try 2" oninput="updateSingleNPA('od', 2)">
+            <select id="unit_od_2" onchange="updateSingleNPA('od', 2)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_od_2" class="try-res">-- D</div>
+        </div>
+        <div class="npa-row">
+            <input id="npa_od_3" type="number" placeholder="Try 3" oninput="updateSingleNPA('od', 3)">
+            <select id="unit_od_3" onchange="updateSingleNPA('od', 3)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_od_3" class="try-res">-- D</div>
+        </div>
+
+        <label style="margin-top:20px;">OS (Left Eye)</label>
+        <div class="npa-row">
+            <input id="npa_os_1" type="number" placeholder="Try 1" oninput="updateSingleNPA('os', 1)">
+            <select id="unit_os_1" onchange="updateSingleNPA('os', 1)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_os_1" class="try-res">-- D</div>
+        </div>
+        <div class="npa-row">
+            <input id="npa_os_2" type="number" placeholder="Try 2" oninput="updateSingleNPA('os', 2)">
+            <select id="unit_os_2" onchange="updateSingleNPA('os', 2)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_os_2" class="try-res">-- D</div>
+        </div>
+        <div class="npa-row">
+            <input id="npa_os_3" type="number" placeholder="Try 3" oninput="updateSingleNPA('os', 3)">
+            <select id="unit_os_3" onchange="updateSingleNPA('os', 3)"><option value="cm">cm</option><option value="in">in</option></select>
+            <div id="res_os_3" class="try-res">-- D</div>
+        </div>
+        
+        <button onclick="calculateNPAAverage()">Calculate Averages</button>
+        <div class="answers" id="npa_avg_od">OD Average: --</div>
+        <div class="answers" id="npa_avg_os">OS Average: --</div>
+    </div>
+
+    <h2>Hofstetter's Norms</h2>
+    <div class="card">
+        <label>Enter Patient Age</label>
+        <input id="h_age" type="number" oninput="calculateHofstetter()">
+        <div id="hof_results" style="display:none; margin-top:10px;">
+            <div class="answers" id="hof_max"></div>
+            <div class="answers" id="hof_avg"></div>
+            <div class="answers" id="hof_min"></div>
+        </div>
+    </div>
+
+    <h2>Amplitude of Accommodation</h2>
+    <div class="card">
+        <label>Non-Presbyope (TBO / VT #7)</label>
+        <div class="npa-row"><input id="tbo_od_np" type="number" placeholder="TBO OD"><input id="vt_od_np" type="number" placeholder="VT#7 OD"></div>
+        <div class="npa-row"><input id="tbo_os_np" type="number" placeholder="TBO OS"><input id="vt_os_np" type="number" placeholder="VT#7 OS"></div>
+        <button onclick="calculateNonPresbyope()">Calculate Non-Presbyope</button>
+        <div class="answers" id="np_res_od">OD Result: --</div>
+        <div class="answers" id="np_res_os">OS Result: --</div>
+
+        <label style="margin-top:25px;">Presbyope (TBO / TNC)</label>
+        <div class="npa-row"><input id="tbo_od_p" type="number" placeholder="TBO OD"><input id="tnc_od_p" type="number" placeholder="TNC OD"></div>
+        <div class="npa-row"><input id="tbo_os_p" type="number" placeholder="TBO OS"><input id="tnc_os_p" type="number" placeholder="TNC OS"></div>
+        <button onclick="calculatePresbyope()">Calculate Presbyope</button>
+        <div class="answers" id="p_res_od">OD Result: --</div>
+        <div class="answers" id="p_res_os">OS Result: --</div>
+    </div>
+
+    <h2>Keratometer</h2>
+    <div class="card">
+        <label>OD (Right Eye)</label>
+        <div class="npa-row"><input id="k_od_vm" type="number" placeholder="VM" step="0.001"><input id="k_od_hm" type="number" placeholder="HM" step="0.001"></div>
+        <label style="margin-top:15px;">OS (Left Eye)</label>
+        <div class="npa-row"><input id="k_os_vm" type="number" placeholder="VM" step="0.001"><input id="k_os_hm" type="number" placeholder="HM" step="0.001"></div>
+        <button onclick="calculateKeratometer()">Calculate Keratometry</button>
+        <div class="answers" id="k_res_od">OD Diff: --</div>
+        <div class="answers" id="k_res_os">OS Diff: --</div>
+    </div>
+
+</div>
+</div>
+
+<div class="container">
+    <button class="pdf-btn" onclick="generatePDF()">Download Patient PDF Report</button>
+</div>
+
+<script>
+document.getElementById('report_date').valueAsDate = new Date();
+
+function roundToQuarter(value) {
+    return (Math.round(value * 4) / 4).toFixed(2);
+}
+
+// NEW: Real-time individual NPA update
+function updateSingleNPA(side, tryNum) {
+    let val = parseFloat(document.getElementById(`npa_${side}_${tryNum}`).value);
+    let unit = document.getElementById(`unit_${side}_${tryNum}`).value;
+    let resDiv = document.getElementById(`res_${side}_${tryNum}`);
+    
+    if (!isNaN(val) && val > 0) {
+        let diopters = (unit === "cm") ? (100 / val) : (40 / val);
+        resDiv.innerText = diopters.toFixed(2) + " D";
+    } else {
+        resDiv.innerText = "-- D";
+    }
+}
+
+function calculateNPAAverage() {
+    ['od', 'os'].forEach(side => {
+        let dioptersSum = 0, count = 0;
+        for (let i = 1; i <= 3; i++) {
+            let val = parseFloat(document.getElementById(`npa_${side}_${i}`).value);
+            let unit = document.getElementById(`unit_${side}_${i}`).value;
+            if (!isNaN(val) && val > 0) {
+                dioptersSum += (unit === "cm") ? (100 / val) : (40 / val);
+                count++;
+            }
+        }
+        let res = document.getElementById(`npa_avg_${side}`);
+        if (count > 0) {
+            let avg = dioptersSum / count;
+            res.innerHTML = `${side.toUpperCase()} Average: ${avg.toFixed(2)} D (Round: ${roundToQuarter(avg)} D)`;
+        } else {
+            res.innerHTML = `${side.toUpperCase()} Average: --`;
+        }
+    });
+}
+
+function calculateHofstetter() {
+    let age = parseFloat(document.getElementById("h_age").value);
+    if (isNaN(age)) { document.getElementById("hof_results").style.display = "none"; return; }
+    document.getElementById("hof_results").style.display = "block";
+    document.getElementById("hof_max").innerHTML = "Max: " + (25 - (0.4 * age)).toFixed(2) + " D";
+    document.getElementById("hof_avg").innerHTML = "Avg: " + (18.5 - (0.3 * age)).toFixed(2) + " D";
+    document.getElementById("hof_min").innerHTML = "Min: " + (15 - (0.25 * age)).toFixed(2) + " D";
+}
+
+function calculateNonPresbyope() {
+    ['od', 'os'].forEach(side => {
+        let tbo = parseFloat(document.getElementById(`tbo_${side}_np`).value);
+        let vt = parseFloat(document.getElementById(`vt_${side}_np`).value);
+        if (!isNaN(tbo) && !isNaN(vt)) {
+            let res = Math.abs(tbo - vt) + 2.50;
+            document.getElementById(`np_res_${side}`).innerHTML = `${side.toUpperCase()} Result: ${res.toFixed(2)} D`;
+        }
+    });
+}
+
+function calculatePresbyope() {
+    ['od', 'os'].forEach(side => {
+        let tbo = parseFloat(document.getElementById(`tbo_${side}_p`).value);
+        let tnc = parseFloat(document.getElementById(`tnc_${side}_p`).value);
+        if (!isNaN(tbo) && !isNaN(tnc)) {
+            let res = Math.abs(tbo - tnc) - 2.50;
+            document.getElementById(`p_res_${side}`).innerHTML = `${side.toUpperCase()} Result: ${res.toFixed(2)} D`;
+        }
+    });
+}
+
+function calculateKeratometer() {
+    ['od', 'os'].forEach(side => {
+        let vm = parseFloat(document.getElementById(`k_${side}_vm`).value);
+        let hm = parseFloat(document.getElementById(`k_${side}_hm`).value);
+        if (!isNaN(vm) && !isNaN(hm)) {
+            document.getElementById(`k_res_${side}`).innerHTML = `${side.toUpperCase()} Diff: ${Math.abs(vm - hm).toFixed(3)}`;
+        }
+    });
+}
+
+function generatePDF() {
+    const element = document.getElementById('report-content');
+    const name = document.getElementById('patient_name').value || "Patient";
+    const opt = {
+        margin: 10,
+        filename: `Optometry_Report_${name}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+</script>
+
+</body>
+</html>

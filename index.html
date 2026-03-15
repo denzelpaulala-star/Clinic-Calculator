@@ -136,9 +136,9 @@ h1 { margin-top: 30px; }
         <div class="answers" id="np_res_od">OD Result: --</div>
         <div class="answers" id="np_res_os">OS Result: --</div>
 
-        <label style="margin-top:25px;">Presbyope (TBO / TNC)</label>
-        <div class="npa-row"><input id="tbo_od_p" type="number" placeholder="TBO OD"><input id="tnc_od_p" type="number" placeholder="TNC OD"></div>
-        <div class="npa-row"><input id="tbo_os_p" type="number" placeholder="TBO OS"><input id="tnc_os_p" type="number" placeholder="TNC OS"></div>
+        <label style="margin-top:25px;">Presbyope (TBO / VT #7)</label>
+        <div class="npa-row"><input id="tbo_od_p" type="number" placeholder="TBO OD"><input id="vt_od_p" type="number" placeholder="VT#7 OD"></div>
+        <div class="npa-row"><input id="tbo_os_p" type="number" placeholder="TBO OS"><input id="vt_os_p" type="number" placeholder="VT#7 OS"></div>
         <button onclick="calculatePresbyope()">Calculate Presbyope</button>
         <div class="answers" id="p_res_od">OD Result: --</div>
         <div class="answers" id="p_res_os">OS Result: --</div>
@@ -222,9 +222,9 @@ function calculateNonPresbyope() {
 function calculatePresbyope() {
     ['od', 'os'].forEach(side => {
         let tbo = parseFloat(document.getElementById(`tbo_${side}_p`).value);
-        let tnc = parseFloat(document.getElementById(`tnc_${side}_p`).value);
-        if (!isNaN(tbo) && !isNaN(tnc)) {
-            let res = Math.abs(tbo - tnc) - 2.50;
+        let vt = parseFloat(document.getElementById(`vt_${side}_p`).value);
+        if (!isNaN(tbo) && !isNaN(vt)) {
+            let res = Math.abs(tbo - vt) - 2.50;
             document.getElementById(`p_res_${side}`).innerHTML = `${side.toUpperCase()} Result: ${res.toFixed(2)} D`;
         }
     });

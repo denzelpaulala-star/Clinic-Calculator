@@ -156,11 +156,6 @@ h1 { margin-top: 30px; }
     </div>
 
 </div>
-</div>
-
-<div class="container">
-    <button class="pdf-btn" onclick="generatePDF()">Under Fix</button>
-</div>
 
 <script>
 document.getElementById('report_date').valueAsDate = new Date();
@@ -243,19 +238,6 @@ function calculateKeratometer() {
             document.getElementById(`k_res_${side}`).innerHTML = `${side.toUpperCase()} Diff: ${Math.abs(vm - hm).toFixed(3)}`;
         }
     });
-}
-
-function generatePDF() {
-    const element = document.getElementById('report-content');
-    const name = document.getElementById('patient_name').value || "Patient";
-    const opt = {
-        margin: 10,
-        filename: `Optometry_Report_${name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
 }
 </script>
 

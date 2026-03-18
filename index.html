@@ -1,245 +1,272 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Optometry Clinic Calculator</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-* { box-sizing: border-box; }
-/* Pastel Yellow Theme */
-body { font-family: Arial, sans-serif; background: #fcf3d4; margin: 0; padding: 20px; }
-.container { max-width: 500px; margin: auto; position: relative; }
-.card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-h1 { text-align: center; color: #333; margin-top: 10px; border-bottom: 2px solid #2c7be5; padding-bottom: 5px; }
-h2 { text-align: center; margin-top: 0; font-size: 1.1rem; color: #555; text-transform: uppercase; }
-label { font-weight: bold; display: block; margin-top: 10px; }
-input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
-button { width: 100%; padding: 12px; margin-top: 10px; font-size: 16px; background: #2c7be5; color: white; border: none; border-radius: 8px; cursor: pointer; }
-button:active { background: #1a5ab5; }
-.answers { font-size: 16px; font-weight: bold; margin-top: 12px; padding: 10px; background: #fdfdfd; border-radius: 5px; border-left: 4px solid #2c7be5; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
+* { box-sizing: border-box; scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fcf3d4; margin: 0; padding: 15px; color: #333; }
+.container { max-width: 600px; margin: auto; position: relative; }
+.card { background: white; padding: 18px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-/* Layout for NPA Tries */
-.npa-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.npa-row input { flex: 2; }
-.npa-row select { flex: 1; }
-.try-res { flex: 1.5; font-size: 14px; color: #2c7be5; font-weight: bold; text-align: right; min-width: 70px; }
+/* Header & Subtitle */
+h1 { text-align: center; color: #1a5ab5; margin-bottom: 4px; font-size: 1.4rem; text-transform: uppercase; margin-top: 25px; }
+.subtitle { text-align: center; font-size: 0.85rem; color: #666; font-style: italic; margin-bottom: 25px; display: block; }
 
-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; background: white; }
-th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-th { background-color: #2c7be5; color: white; }
-tr:nth-child(even) { background-color: #f9f9f9; }
+/* Navigation */
+.nav-menu { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 25px; }
+.nav-item { background: #fff; padding: 12px 5px; text-align: center; text-decoration: none; color: #2c7be5; font-weight: bold; border-radius: 8px; font-size: 11px; border: 1px solid #2c7be5; }
 
-.pdf-btn { background: #28a745; margin-top: 20px; margin-bottom: 50px; font-weight: bold; }
+h2 { border-left: 4px solid #2c7be5; padding-left: 10px; margin: 15px 0 10px 0; font-size: 1.05rem; color: #2c7be5; text-transform: uppercase; }
+label { font-weight: bold; display: block; margin-top: 12px; font-size: 14px; color: #444; }
 
-/* Circular Logo Styling */
-.logo-container { position: absolute; top: 62px; right: 0; }
-.logo-circle { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #2c7be5; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+/* Universal Input Styling */
+input, select { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: #fff; appearance: none; -webkit-appearance: none; }
+input[type="text"], input[type="number"], input[type="date"] { width: 100%; }
+
+/* Fixed Layout Logic */
+.flex-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.flex-row input { flex: 1; min-width: 0; width: auto; }
+.flex-row select { width: 85px; flex-shrink: 0; text-align: center; } 
+.eye-tag { width: 35px; font-weight: bold; color: #1a5ab5; flex-shrink: 0; text-align: left; }
+.res-tag { width: 70px; text-align: right; font-weight: bold; color: #28a745; font-size: 14px; flex-shrink: 0; }
+
+button { width: 100%; padding: 15px; margin-top: 10px; font-size: 16px; background: #2c7be5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+button:active { background: #1a5ab5; transform: scale(0.98); }
+
+/* Stacked Result Styling */
+.answers { font-size: 15px; font-weight: bold; margin-top: 10px; padding: 12px; background: #f8faff; border-radius: 8px; border-left: 4px solid #2c7be5; color: #1a5ab5; }
+.res-line { display: block; margin-bottom: 4px; }
+
+.guide-box { margin-top: 15px; padding: 12px; background: #fffdf5; border: 1px dashed #d4af37; border-radius: 8px; font-size: 13px; line-height: 1.5; }
+.guide-box b { color: #d93025; }
+
+/* Table Styling */
+.ref-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+.ref-table th { background: #2c7be5; color: white; padding: 8px; border: 1px solid #ccc; }
+.ref-table td { padding: 6px; border: 1px solid #ccc; }
+
+.logo-container { position: absolute; top: -10px; right: 0; }
+.logo-circle { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #2c7be5; overflow: hidden; background: #fff; }
 .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
-h1 { margin-top: 30px; }
 </style>
 </head>
 
 <body>
 
-<div id="report-content">
 <div class="container">
-
     <div class="logo-container">
-        <div class="logo-circle">
-            <img src="logo.jpg" alt="Logo">
+        <div class="logo-circle"><img src="logo.jpg" alt="Logo"></div>
+    </div>
+
+    <h1 id="top">CLINIC CALCULATOR</h1>
+    <span class="subtitle">Buhay ay di karera, mag paubaya ng module.</span>
+
+    <div class="nav-menu">
+        <a href="#npa-sec" class="nav-item">NPA</a>
+        <a href="#ret-sec" class="nav-item">Retinoscopy</a>
+        <a href="#ker-sec" class="nav-item">Keratometry</a>
+        <a href="#hof-sec" class="nav-item">Hofstetter</a>
+        <a href="#d15-sec" class="nav-item">D-15</a>
+        <a href="#amp-sec" class="nav-item">VT #19</a>
+    </div>
+
+    <div class="card">
+        <label>Patient Name</label>
+        <input type="text" id="p_name" placeholder="Enter name...">
+        <label>Date</label>
+        <input type="date" id="r_date">
+    </div>
+
+    <h2 id="npa-sec">NPA Measurement</h2>
+    <div class="card">
+        <label>OD (Right Eye)</label>
+        <div class="flex-row"><input id="od_1" type="number" placeholder="1st" oninput="upNPA('od', 1)"><select id="u_od_1" onchange="upNPA('od', 1)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_od_1" class="res-tag">-- D</div></div>
+        <div class="flex-row"><input id="od_2" type="number" placeholder="2nd" oninput="upNPA('od', 2)"><select id="u_od_2" onchange="upNPA('od', 2)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_od_2" class="res-tag">-- D</div></div>
+        <div class="flex-row"><input id="od_3" type="number" placeholder="3rd" oninput="upNPA('od', 3)"><select id="u_od_3" onchange="upNPA('od', 3)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_od_3" class="res-tag">-- D</div></div>
+
+        <label style="margin-top:10px;">OS (Left Eye)</label>
+        <div class="flex-row"><input id="os_1" type="number" placeholder="1st" oninput="upNPA('os', 1)"><select id="u_os_1" onchange="upNPA('os', 1)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_os_1" class="res-tag">-- D</div></div>
+        <div class="flex-row"><input id="os_2" type="number" placeholder="2nd" oninput="upNPA('os', 2)"><select id="u_os_2" onchange="upNPA('os', 2)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_os_2" class="res-tag">-- D</div></div>
+        <div class="flex-row"><input id="os_3" type="number" placeholder="3rd" oninput="upNPA('os', 3)"><select id="u_os_3" onchange="upNPA('os', 3)"><option value="cm">cm</option><option value="in">in</option></select><div id="r_os_3" class="res-tag">-- D</div></div>
+        
+        <button onclick="calcAvg()">Calculate Averages</button>
+        <div class="answers">
+            <span class="res-line" id="avg_od">OD Average: --</span>
+            <span class="res-line" id="avg_os">OS Average: --</span>
         </div>
     </div>
 
-    <h1>CLINIC CALCULATOR</h1>
-    
-    <div class="card">
-        <label>Patient Name</label>
-        <input type="text" id="patient_name" placeholder="Full Name">
-        <label>Date</label>
-        <input type="date" id="report_date">
-    </div>
-
-    <h2>Donder's Reference</h2>
-    <div class="card">
-        <table>
-            <tr><th>Age</th><th>Amp (D)</th><th>Age</th><th>Amp (D)</th></tr>
-            <tr><td>10</td><td>14.00</td><td>45</td><td>3.50</td></tr>
-            <tr><td>15</td><td>12.00</td><td>50</td><td>2.50</td></tr>
-            <tr><td>20</td><td>10.00</td><td>55</td><td>1.75</td></tr>
-            <tr><td>25</td><td>8.50</td><td>60</td><td>1.00</td></tr>
-            <tr><td>30</td><td>7.00</td><td>65</td><td>0.50</td></tr>
-            <tr><td>35</td><td>5.50</td><td>70</td><td>0.25</td></tr>
-            <tr><td>40</td><td>5.00</td><td>75</td><td>0.00</td></tr>
+    <h2 id="don-sec">Donder's Table Reference</h2>
+    <div class="card" style="overflow-x: auto;">
+        <table class="ref-table">
+            <thead>
+                <tr><th>Age</th><th>Amp (D)</th><th>Age</th><th>Amp (D)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>10</td><td>14.0</td><td>45</td><td>3.5</td></tr>
+                <tr><td>15</td><td>12.0</td><td>50</td><td>2.5</td></tr>
+                <tr><td>20</td><td>10.0</td><td>55</td><td>1.75</td></tr>
+                <tr><td>25</td><td>8.5</td><td>60</td><td>1.0</td></tr>
+                <tr><td>30</td><td>7.0</td><td>65</td><td>0.5</td></tr>
+                <tr><td>35</td><td>5.5</td><td>70</td><td>0.25</td></tr>
+                <tr><td>40</td><td>4.5</td><td colspan="2" style="background:#eee;"></td></tr>
+            </tbody>
         </table>
     </div>
 
-    <h2>NPA Measurement</h2>
+    <h2 id="hof-sec">Hofstetter's Formula</h2>
     <div class="card">
-        <label>OD (Right Eye)</label>
-        <div class="npa-row">
-            <input id="npa_od_1" type="number" placeholder="Try 1" oninput="updateSingleNPA('od', 1)">
-            <select id="unit_od_1" onchange="updateSingleNPA('od', 1)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_od_1" class="try-res">-- D</div>
-        </div>
-        <div class="npa-row">
-            <input id="npa_od_2" type="number" placeholder="Try 2" oninput="updateSingleNPA('od', 2)">
-            <select id="unit_od_2" onchange="updateSingleNPA('od', 2)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_od_2" class="try-res">-- D</div>
-        </div>
-        <div class="npa-row">
-            <input id="npa_od_3" type="number" placeholder="Try 3" oninput="updateSingleNPA('od', 3)">
-            <select id="unit_od_3" onchange="updateSingleNPA('od', 3)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_od_3" class="try-res">-- D</div>
-        </div>
-
-        <label style="margin-top:20px;">OS (Left Eye)</label>
-        <div class="npa-row">
-            <input id="npa_os_1" type="number" placeholder="Try 1" oninput="updateSingleNPA('os', 1)">
-            <select id="unit_os_1" onchange="updateSingleNPA('os', 1)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_os_1" class="try-res">-- D</div>
-        </div>
-        <div class="npa-row">
-            <input id="npa_os_2" type="number" placeholder="Try 2" oninput="updateSingleNPA('os', 2)">
-            <select id="unit_os_2" onchange="updateSingleNPA('os', 2)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_os_2" class="try-res">-- D</div>
-        </div>
-        <div class="npa-row">
-            <input id="npa_os_3" type="number" placeholder="Try 3" oninput="updateSingleNPA('os', 3)">
-            <select id="unit_os_3" onchange="updateSingleNPA('os', 3)"><option value="cm">cm</option><option value="in">in</option></select>
-            <div id="res_os_3" class="try-res">-- D</div>
-        </div>
+        <label>Patient Age</label>
+        <input id="age" type="number" oninput="calcHof()">
         
-        <button onclick="calculateNPAAverage()">Calculate Averages</button>
-        <div class="answers" id="npa_avg_od">OD Average: --</div>
-        <div class="answers" id="npa_avg_os">OS Average: --</div>
-    </div>
-
-    <h2>Hofstetter's Norms</h2>
-    <div class="card">
-        <label>Enter Patient Age</label>
-        <input id="h_age" type="number" oninput="calculateHofstetter()">
-        <div id="hof_results" style="display:none; margin-top:10px;">
-            <div class="answers" id="hof_max"></div>
-            <div class="answers" id="hof_avg"></div>
-            <div class="answers" id="hof_min"></div>
+        <div id="hof_res" style="display:none;">
+            <div class="answers">
+                <span class="res-line" id="h_max"></span>
+                <span class="res-line" id="h_avg"></span>
+                <span class="res-line" id="h_min"></span>
+            </div>
+            
+            <div class="guide-box">
+                <b>Diagnostic Guide:</b><br>
+                • <b>Acc. Excess:</b> AoA ≥ Max Hofstetter<br>
+                • <b>Acc. Insufficiency:</b> AoA ≤ (Min Hofstetter - 2)<br>
+                • <b>Acc. Spasm:</b> AoA ≥ (Max Hofstetter + 10)
+            </div>
         </div>
     </div>
 
-    <h2>Amplitude of Accommodation</h2>
+    <h2 id="ret-sec">Retinoscopy Calculator</h2>
     <div class="card">
-        <label>Non-Presbyope (TBO-VT #7)</label>
-        <div class="npa-row"><input id="tbo_od_np" type="number" placeholder="TBO OD"><input id="vt_od_np" type="number" placeholder="VT#7 OD"></div>
-        <div class="npa-row"><input id="tbo_os_np" type="number" placeholder="TBO OS"><input id="vt_os_np" type="number" placeholder="VT#7 OS"></div>
-        <button onclick="calculateNonPresbyope()">Calculate Non-Presbyope</button>
-        <div class="answers" id="np_res_od">OD Result: --</div>
-        <div class="answers" id="np_res_os">OS Result: --</div>
-
-        <label style="margin-top:25px;">Presbyope (TBO-VT #7)</label>
-        <div class="npa-row"><input id="tbo_od_p" type="number" placeholder="TBO OD"><input id="vt_od_p" type="number" placeholder="VT#7 OD"></div>
-        <div class="npa-row"><input id="tbo_os_p" type="number" placeholder="TBO OS"><input id="vt_os_p" type="number" placeholder="VT#7 OS"></div>
-        <button onclick="calculatePresbyope()">Calculate Presbyope</button>
-        <div class="answers" id="p_res_od">OD Result: --</div>
-        <div class="answers" id="p_res_os">OS Result: --</div>
+        <p style="font-size: 12px; color: #888; margin-bottom: 10px;">Input Sph value only.</p>
+        <div class="flex-row"><span class="eye-tag">OD</span><input id="ret_od" type="number" placeholder="Gross Sph" step="0.25" oninput="runRet()"><div id="net_od" class="res-tag">Net: --</div></div>
+        <div class="flex-row"><span class="eye-tag">OS</span><input id="ret_os" type="number" placeholder="Gross Sph" step="0.25" oninput="runRet()"><div id="net_os" class="res-tag">Net: --</div></div>
     </div>
 
-    <h2>Keratometer</h2>
+    <h2 id="d15-sec">Farnsworth D-15 Test</h2>
     <div class="card">
-        <label>OD (Right Eye)</label>
-        <div class="npa-row"><input id="k_od_vm" type="number" placeholder="VM" step="0.001"><input id="k_od_hm" type="number" placeholder="HM" step="0.001"></div>
-        <label style="margin-top:15px;">OS (Left Eye)</label>
-        <div class="npa-row"><input id="k_os_vm" type="number" placeholder="VM" step="0.001"><input id="k_os_hm" type="number" placeholder="HM" step="0.001"></div>
-        <button onclick="calculateKeratometer()">Calculate Keratometry</button>
-        <div class="answers" id="k_res_od">OD Diff: --</div>
-        <div class="answers" id="k_res_os">OS Diff: --</div>
+        <label>Input Sequence (e.g. 1,2,3...)</label>
+        <input id="d15_in" type="text" placeholder="1, 2, 3... 15">
+        <button onclick="checkD15()">Analyze</button>
+        <div class="answers" id="d15_res">Result: --</div>
+    </div>
+
+    <h2 id="amp-sec">VT #19 AOA (Amplitude)</h2>
+    <div class="card">
+        <label>Non-Presbyope LIP: VT #7</label>
+        <div class="flex-row"><input id="tbo_od_np" type="number" placeholder="TBO OD"><input id="vt_od_np" type="number" placeholder="VT#7 OD"></div>
+        <div class="flex-row"><input id="tbo_os_np" type="number" placeholder="TBO OS"><input id="vt_os_np" type="number" placeholder="VT#7 OS"></div>
+        <button onclick="calcNP()">Calculate Non Presbyope</button>
+        <div class="answers">
+            <span class="res-line" id="res_np_od">OD: --</span>
+            <span class="res-line" id="res_np_os">OS: --</span>
+        </div>
+
+        <label style="margin-top:20px;">Presbyope LIP: TNC</label>
+        <div class="flex-row"><input id="tbo_od_p" type="number" placeholder="TBO OD"><input id="vt_od_p" type="number" placeholder="VT#7 OD"></div>
+        <div class="flex-row"><input id="tbo_os_p" type="number" placeholder="TBO OS"><input id="vt_os_p" type="number" placeholder="VT#7 OS"></div>
+        <button onclick="calcP()">Calculate Presbyope</button>
+        <div class="answers">
+            <span class="res-line" id="res_p_od">OD: --</span>
+            <span class="res-line" id="res_p_os">OS: --</span>
+        </div>
+    </div>
+
+    <h2 id="ker-sec">Keratometry</h2>
+    <div class="card">
+        <div class="flex-row"><span class="eye-tag">OD</span><input id="k_od_v" type="number" placeholder="VM"><input id="k_od_h" type="number" placeholder="HM"></div>
+        <div class="flex-row"><span class="eye-tag">OS</span><input id="k_os_v" type="number" placeholder="VM"><input id="k_os_h" type="number" placeholder="HM"></div>
+        <button onclick="calcK()">Calculate Difference</button>
+        <div class="answers">
+            <span class="res-line" id="res_k_od">OD: --</span>
+            <span class="res-line" id="res_k_os">OS: --</span>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <button class="tinylytics_kudos" style="background: white; border: 1px solid #2c7be5; border-radius: 20px; padding: 10px 25px; cursor: pointer; color: #2c7be5; font-weight: bold;">❤️ Send Kudos</button>
     </div>
 
 </div>
 
 <script>
-document.getElementById('report_date').valueAsDate = new Date();
+document.getElementById('r_date').valueAsDate = new Date();
 
-function roundToQuarter(value) {
-    return (Math.round(value * 4) / 4).toFixed(2);
+function upNPA(s, t) {
+    let v = parseFloat(document.getElementById(`${s}_${t}`).value);
+    let u = document.getElementById(`u_${s}_${t}`).value;
+    let r = document.getElementById(`r_${s}_${t}`);
+    if (v > 0) r.innerText = (u === "cm" ? 100/v : 40/v).toFixed(2) + " D";
+    else r.innerText = "-- D";
 }
 
-// NEW: Real-time individual NPA update
-function updateSingleNPA(side, tryNum) {
-    let val = parseFloat(document.getElementById(`npa_${side}_${tryNum}`).value);
-    let unit = document.getElementById(`unit_${side}_${tryNum}`).value;
-    let resDiv = document.getElementById(`res_${side}_${tryNum}`);
-    
-    if (!isNaN(val) && val > 0) {
-        let diopters = (unit === "cm") ? (100 / val) : (40 / val);
-        resDiv.innerText = diopters.toFixed(2) + " D";
-    } else {
-        resDiv.innerText = "-- D";
-    }
-}
-
-function calculateNPAAverage() {
-    ['od', 'os'].forEach(side => {
-        let dioptersSum = 0, count = 0;
+function calcAvg() {
+    ['od', 'os'].forEach(s => {
+        let sum = 0, c = 0;
         for (let i = 1; i <= 3; i++) {
-            let val = parseFloat(document.getElementById(`npa_${side}_${i}`).value);
-            let unit = document.getElementById(`unit_${side}_${i}`).value;
-            if (!isNaN(val) && val > 0) {
-                dioptersSum += (unit === "cm") ? (100 / val) : (40 / val);
-                count++;
-            }
+            let v = parseFloat(document.getElementById(`${s}_${i}`).value);
+            let u = document.getElementById(`u_${s}_${i}`).value;
+            if (v > 0) { sum += (u === "cm" ? 100/v : 40/v); c++; }
         }
-        let res = document.getElementById(`npa_avg_${side}`);
-        if (count > 0) {
-            let avg = dioptersSum / count;
-            res.innerHTML = `${side.toUpperCase()} Average: ${avg.toFixed(2)} D (Round: ${roundToQuarter(avg)} D)`;
-        } else {
-            res.innerHTML = `${side.toUpperCase()} Average: --`;
-        }
+        document.getElementById(`avg_${s}`).innerText = `${s.toUpperCase()} Average: ` + (c > 0 ? (sum/c).toFixed(2) + " D" : "--");
     });
 }
 
-function calculateHofstetter() {
-    let age = parseFloat(document.getElementById("h_age").value);
-    if (isNaN(age)) { document.getElementById("hof_results").style.display = "none"; return; }
-    document.getElementById("hof_results").style.display = "block";
-    document.getElementById("hof_max").innerHTML = "Max: " + (25 - (0.4 * age)).toFixed(2) + " D";
-    document.getElementById("hof_avg").innerHTML = "Avg: " + (18.5 - (0.3 * age)).toFixed(2) + " D";
-    document.getElementById("hof_min").innerHTML = "Min: " + (15 - (0.25 * age)).toFixed(2) + " D";
+function calcHof() {
+    let a = parseFloat(document.getElementById("age").value);
+    if (isNaN(a)) { document.getElementById("hof_res").style.display="none"; return; }
+    document.getElementById("hof_res").style.display="block";
+    document.getElementById("h_max").innerText = "Max: " + (25 - 0.4*a).toFixed(2) + " D";
+    document.getElementById("h_avg").innerText = "Avg: " + (18.5 - 0.3*a).toFixed(2) + " D";
+    document.getElementById("h_min").innerText = "Min: " + (15 - 0.25*a).toFixed(2) + " D";
 }
 
-function calculateNonPresbyope() {
-    ['od', 'os'].forEach(side => {
-        let tbo = parseFloat(document.getElementById(`tbo_${side}_np`).value);
-        let vt = parseFloat(document.getElementById(`vt_${side}_np`).value);
-        if (!isNaN(tbo) && !isNaN(vt)) {
-            let res = Math.abs(tbo - vt) + 2.50;
-            document.getElementById(`np_res_${side}`).innerHTML = `${side.toUpperCase()} Result: ${res.toFixed(2)} D`;
-        }
+function runRet() {
+    ['od', 'os'].forEach(s => {
+        let v = parseFloat(document.getElementById(`ret_${s}`).value);
+        document.getElementById(`net_${s}`).innerText = isNaN(v) ? "Net: --" : "Net: " + (v - 2).toFixed(2) + " D";
     });
 }
 
-function calculatePresbyope() {
-    ['od', 'os'].forEach(side => {
-        let tbo = parseFloat(document.getElementById(`tbo_${side}_p`).value);
-        let vt = parseFloat(document.getElementById(`vt_${side}_p`).value);
-        if (!isNaN(tbo) && !isNaN(vt)) {
-            let res = Math.abs(tbo - vt) - 2.50;
-            document.getElementById(`p_res_${side}`).innerHTML = `${side.toUpperCase()} Result: ${res.toFixed(2)} D`;
-        }
+function checkD15() {
+    let i = document.getElementById("d15_in").value.replace(/\s+/g, '');
+    let r = document.getElementById("d15_res");
+    if (i === "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15") r.innerText = "Result: Normal";
+    else if (i.includes("1,15") || i.includes("15,1")) r.innerText = "Result: Protan Axis";
+    else if (i.includes("1,13") || i.includes("13,1")) r.innerText = "Result: Deutan Axis";
+    else if (i.includes("5,14") || i.includes("14,5")) r.innerText = "Result: Tritan Axis";
+    else r.innerText = "Result: Errors Detected";
+}
+
+function calcNP() {
+    ['od', 'os'].forEach(s => {
+        let t = parseFloat(document.getElementById(`tbo_${s}_np`).value);
+        let v = parseFloat(document.getElementById(`vt_${s}_np`).value);
+        document.getElementById(`res_np_${s}`).innerText = (!isNaN(t) && !isNaN(v)) ? `${s.toUpperCase()}: ${(Math.abs(t-v)+2.5).toFixed(2)} D` : `${s.toUpperCase()}: --`;
     });
 }
 
-function calculateKeratometer() {
-    ['od', 'os'].forEach(side => {
-        let vm = parseFloat(document.getElementById(`k_${side}_vm`).value);
-        let hm = parseFloat(document.getElementById(`k_${side}_hm`).value);
-        if (!isNaN(vm) && !isNaN(hm)) {
-            document.getElementById(`k_res_${side}`).innerHTML = `${side.toUpperCase()} Diff: ${Math.abs(vm - hm).toFixed(3)}`;
-        }
+function calcP() {
+    ['od', 'os'].forEach(s => {
+        let t = parseFloat(document.getElementById(`tbo_${s}_p`).value);
+        let v = parseFloat(document.getElementById(`vt_${s}_p`).value);
+        document.getElementById(`res_p_${s}`).innerText = (!isNaN(t) && !isNaN(v)) ? `${s.toUpperCase()}: ${(Math.abs(t-v)-2.5).toFixed(2)} D` : `${s.toUpperCase()}: --`;
+    });
+}
+
+function calcK() {
+    ['od', 'os'].forEach(s => {
+        let v = parseFloat(document.getElementById(`k_${s}_v`).value);
+        let h = parseFloat(document.getElementById(`k_${s}_h`).value);
+        document.getElementById(`res_k_${s}`).innerText = (!isNaN(v) && !isNaN(h)) ? `${s.toUpperCase()}: ${Math.abs(v-h).toFixed(3)}` : `${s.toUpperCase()}: --`;
     });
 }
 </script>
-    <script src="https://tinylytics.app/embed/dAyciCWyQnbnHTM-iKXq.js" defer></script>
+
+<script src="https://tinylytics.app/embed/dAyciCWyQnbnHTM-iKXq.js" defer></script>
 </body>
 </html>
